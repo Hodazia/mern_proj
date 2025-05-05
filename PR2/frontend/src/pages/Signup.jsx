@@ -1,18 +1,95 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
 
 const Signup = () => {
+
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    image: null,
+  });
+
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const onChangeHandler = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+  const fileHandler = (e) => {
+    setFormData({ ...formData, image: e.target.files[0] });
+  };
+
+  const submitHandler = async (e) => {
+    e.preventDefault();
+    try {
+      const data = new FormData();
+      data.append("name", formData.name);
+      data.append("email", formData.email);
+      data.append("password", formData.password);
+      data.append("image", formData.image);
+      setLoading(true);
+      const res = await axios.post(
+        "http://localhost:4000/user/register",
+        data,
+        {
+          headers: {
+            "Content-Type": "multipart/formData",
+          },
+        }
+      );
+      if (res.data.success) {
+        toast.success(res.data.message);
+        navigate("/login");
+      }
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className='w-full bg-pink-200 py-12 mx-auto flex items-center justify-center '>
       <div className='w-full bg-white max-w-md  p-5 mx-auto py-6 border-1 border-gray-200  shadow-md '>
         <h1 className="text-lg font-bold text-center text-gray-700">
           Create an account
           </h1>
-        <form className="flex flex-col gap-5 mt-5 w-full">
-          <input type='text' placeholder='your name' className="w-full p-2 border border-gray-300 rounded outline-none" required/>
-          <input type='email' placeholder='your email' className="w-full p-2 border border-gray-300 rounded outline-none"  required/>
-          <input type='password' placeholder='your password' className="w-full p-2 border border-gray-300 rounded outline-none" required/>
+        <form 
+        onSubmit={submitHandler}
+        className="flex flex-col gap-5 mt-5 w-full">
+          <input 
+          onChange={onChangeHandler}
+          name="name"
+          value={formData.name}
+          type='text' 
+          placeholder='your name' 
+          className="w-full p-2 border border-gray-300 rounded outline-none" 
+          required/>
+
+          <input 
+          onChange={onChangeHandler}
+          name="email"
+          value={formData.email}
+          type='email' 
+          placeholder='your email' 
+          className="w-full p-2 border border-gray-300 rounded outline-none"  
+          required/>
+
+
+          <input 
+          onChange={onChangeHandler}
+          name="password"
+          value={formData.password}
+          type='password' 
+          placeholder='your password' 
+          className="w-full p-2 border border-gray-300 rounded outline-none" 
+          required/>
+
+
           <input
+          onChange={fileHandler}
+          accept="image/*"
             type="file"
             className="w-full p-2 border border-gray-300 rounded outline-none"
             required

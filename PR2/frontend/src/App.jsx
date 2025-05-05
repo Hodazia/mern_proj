@@ -10,6 +10,7 @@ import SingleBlog from './pages/SingleBlog'
 import Contact from './pages/Contact'
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import { ToastContainer } from 'react-toastify'
 
 function App() {
 
@@ -27,6 +28,7 @@ function App() {
         <Route path="/blog/:id" element={<SingleBlog />} />
       </Routes>
       <Footer />
+      <ToastContainer />
     </div>
     </>
   )
